@@ -1,0 +1,81 @@
+# Stoker
+  - platform: rest
+    name: StokerApi
+    resource: https://www.stokercloud.dk/dev/getjsondriftdata.php?mac=YOURUSERNAMEHERE
+    json_attributes:
+      - "501" #"60.1 &deg;C Freml&oslash;b",
+      - "502" #"36 % Ydelse",
+      - "503" #"38.4 &deg;C Skakt",
+      - "504" #"4.3 kW Ydelse",
+      - "505" #"25.3 kg Magasin indhold",
+      - "506" #"100 Lx Lys",
+      - "507" #"Drift ",
+      - "508" #"28/12-2021 15:09:13",
+      - "521" #"0 &deg;C Retur",
+      - "522" #"0 liter/time Flow",
+      - "524" #"0 &deg;C Ekstern temperatur",
+      - "525" #"58.6 &deg;C Temperatur VVB",
+      - "526" #"14.9 % Aktuelt ilt",
+      - "527" #"20.9 % &Oslash;nsket ilt",
+      - "528" #"640 Gram snegl ydelse/6 min",
+      - "530" #"13.148 kg Idag",
+      - "531" #"0 kg/m2 Idag",
+      - "532" #"0 &deg;C R&oslash;g temperatur",
+      - "533" #"60 &deg;C &Oslash;nsket kedeltemp.",
+      - "534" #"55 &deg;C &Oslash;nsket VVB temp.",
+      - "542" #" ",
+      - "584" #"Fredensborg Kommune ",
+      - "585" #"94 % luftfugtighed",
+      - "586" #"997 hPa barometer",
+      - "587" #"4.5 m/s vindhastighed",
+      - "588" #"http://openweathermap.org/img/w/13d.png ",
+      - "589" #"0.6 &deg;C lufttemperatur",
+      - "591" #"117 null",
+      - "592" #"0.0 &deg;C T7",
+      - "alarm" #"0"
+    scan_interval: 15
+    value_template: '1' # dummy value, not used; avoids the "State max length is 255 characters" error
+
+
+
+  - platform: template
+    sensors:
+    
+      stokercloud_temperature:
+        friendly_name: Temperature Flow
+        value_template: "{{ state_attr('sensor.StokerApi', '501').split(' ')[0] | float }}"
+        unit_of_measurement: "°C"
+      stokercloud_power:
+        friendly_name: Power
+        value_template: "{{ state_attr('sensor.StokerApi', '502').split(' ')[0] | float }}"
+        unit_of_measurement: "%"
+      stokercloud_temperature_skakt:
+        friendly_name: Temperature Skakt
+        value_template: "{{ state_attr('sensor.StokerApi', '503').split(' ')[0] | float }}"
+        unit_of_measurement: "°C"
+      stokercloud_power_kw:
+        friendly_name: Power
+        value_template: "{{ state_attr('sensor.StokerApi', '504').split(' ')[0] | float }}"
+        unit_of_measurement: "kW"
+      stokercloud_magasin_kg:
+        friendly_name: Magasin KG
+        value_template: "{{ state_attr('sensor.StokerApi', '505').split(' ')[0] | float }}"
+        unit_of_measurement: "kg"
+      stokercloud_lx_lys:
+        friendly_name: Lux
+        value_template: "{{ state_attr('sensor.StokerApi', '506').split(' ')[0] | float }}"
+        unit_of_measurement: "lx"
+      stokercloud_status:
+        friendly_name: Status
+        value_template: "{{ state_attr('sensor.StokerApi', '507') }}"
+      stokercloud_kg_used_today:
+        friendly_name: kg used today
+        value_template: "{{ state_attr('sensor.StokerApi', '530').split(' ')[0] | float }}"
+        unit_of_measurement: "kg"
+      stokercloud_temperature_vvb:
+        friendly_name: Temperature VVB
+        value_template: "{{ state_attr('sensor.StokerApi', '525').split(' ')[0] | float }}"
+        unit_of_measurement: "°C"
+      stokercloud_alarm:
+        friendly_name: Alarm
+        value_template: "{{ state_attr('sensor.StokerApi', 'alarm') }}"
